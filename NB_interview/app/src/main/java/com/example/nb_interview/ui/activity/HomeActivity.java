@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
@@ -46,7 +47,7 @@ import java.util.concurrent.TimeUnit;
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
 
 public class HomeActivity extends AppCompatActivity implements  NavigationView.OnNavigationItemSelectedListener, SwipeRefreshLayout.OnRefreshListener {
-
+    private static final String TAG = "HomeActivity";
     private LinearLayout ll_empty;
     private RecyclerView recyclerView;
     private ShimmerFrameLayout shimmerFrameLayout;
@@ -188,9 +189,11 @@ public class HomeActivity extends AppCompatActivity implements  NavigationView.O
      */
     private void setWork() {
         PeriodicWorkRequest periodicWorkRequest = new PeriodicWorkRequest.Builder(
-                RemoveItemWorker.class, 15, TimeUnit.MINUTES
+                RemoveItemWorker.class, 15, TimeUnit.MINUTES,
+                15, // flex interval - worker will run somewhen within this period of time, but at the end of repeating interval
+                TimeUnit.MINUTES
         ).build();
-        WorkManager.getInstance(this).enqueue(periodicWorkRequest);
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork("Send Data",  ExistingPeriodicWorkPolicy.KEEP,periodicWorkRequest);
     }
 
     /*
@@ -236,7 +239,7 @@ public class HomeActivity extends AppCompatActivity implements  NavigationView.O
     private void loadData() {
         if (internetManager.isAvailable(this)) {
             Utils.showAlert(this, getString(R.string.loading_from_server), AlertType.SUCCESS);
-            viewModel.loadFromServer();
+            viewModel.loadFromServer(this);
         } else {
             Utils.showAlert(this, getString(R.string.loading_from_local), AlertType.WARNING);
             viewModel.loadFromLocal(this);
@@ -253,10 +256,11 @@ public class HomeActivity extends AppCompatActivity implements  NavigationView.O
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.nav_home:
-                Toast.makeText(this, "Home", Toast.LENGTH_SHORT).show();
+
                 break;
             case R.id.nav_aboutUs:
-                Toast.makeText(this, "About us", Toast.LENGTH_SHORT).show();
+                finish();
+                startActivity(new Intent(HomeActivity.this, AboutUsActivity.class));
                 break;
             case R.id.nav_logout:
                 viewModel.logout();

@@ -1,6 +1,7 @@
 package com.example.nb_interview.viewmodel;
 
 import android.app.Application;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LifecycleOwner;
@@ -22,7 +23,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class HomeViewModel extends BaseViewModel {
-
+    private static final String TAG = "HomeViewModel";
     public MutableLiveData<String> username = new MutableLiveData<>();
     public MutableLiveData<List<Products>> productList = new MutableLiveData<>();
     private ProductRepo productRepo;
@@ -45,8 +46,7 @@ public class HomeViewModel extends BaseViewModel {
     /*
     Method which will to fetch the data from server
      */
-    public void loadFromServer() {
-
+    public void loadFromServer(LifecycleOwner lifecycleOwner) {
         isLoading.postValue(true);
         productRepo.getProducts().enqueue(new Callback<List<Products>>() {
             @Override
@@ -56,9 +56,8 @@ public class HomeViewModel extends BaseViewModel {
 
                 if (response.isSuccessful()) {
                     if (response.body() != null) {
-                        productList.postValue(response.body());
                         //save locally
-                        saveDataInLocally(response.body());
+                        saveDataInLocally(response.body(), lifecycleOwner);
                     }
                 }
             }
@@ -75,26 +74,29 @@ public class HomeViewModel extends BaseViewModel {
     /*
     Method to save the fetched data in the local database
      */
-    public void saveDataInLocally(List<Products> productList) {
+    public void saveDataInLocally(List<Products> productList, LifecycleOwner lifecycleOwner) {
         roomDatabase.productDao().clearAll();
         List<LocalProduct> localProducts = new ArrayList<>();
         for (Products products : productList) {
             localProducts.add(new LocalProduct(products));
         }
         roomDatabase.productDao().saveAll(localProducts);
+
+        loadFromLocal(lifecycleOwner);
     }
 
     /*
     Method to fetch data from local database
      */
     public void loadFromLocal(LifecycleOwner lifecycleOwner) {
-
+        Log.e(TAG, "loadFromLocal: ");
         List<Products> products = new ArrayList<>();
 
         roomDatabase.productDao().getAllProducts().observe(lifecycleOwner, new Observer<List<LocalProduct>>() {
             @Override
             public void onChanged(List<LocalProduct> localProducts) {
                 products.clear();
+                Log.e(TAG, "onChanged: " + localProducts.size());
                 for (LocalProduct localProduct : localProducts) {
                     products.add(localProduct.getProducts());
                 }

@@ -7,9 +7,16 @@
     android:gravity="center"
     tools:context=".ui.activity.SplashActivity">
 
+    <ImageView
+        android:id="@+id/img_logo"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/logo"/>
+
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/animation_view"
         android:layout_width="100dp"
+        android:layout_below="@+id/img_logo"
         android:layout_height="100dp"
         app:lottie_autoPlay="true"
         app:lottie_fileName="loading.json"
