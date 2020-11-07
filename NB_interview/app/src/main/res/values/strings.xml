@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">Feeder App</string>
+
+    <string name="login">Login</string>
+
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+
+    <string name="fetching_data">Fetching user</string>
+
+    <string name="empty_list">Oops ! No records found..</string>
+
+    <string name="empty_username">Enter username !</string>
+    <string name="empty_password">Enter password !</string>
+    <string name="hello">Hello </string>
+    <string name="loading_from_server">ONLINE MODE\nLoading from server </string>
+    <string name="loading_from_local">OFFLINE MODE\nLoading from local database </string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="about_us">About Us</string>
+    <string name="home">Home</string>
+    <string name="logout">Logout</string>
+</resources>
