@@ -189,10 +189,9 @@ public class HomeActivity extends AppCompatActivity implements  NavigationView.O
      */
     private void setWork() {
         PeriodicWorkRequest periodicWorkRequest = new PeriodicWorkRequest.Builder(
-                RemoveItemWorker.class, 15, TimeUnit.MINUTES,
-                15, // flex interval - worker will run somewhen within this period of time, but at the end of repeating interval
-                TimeUnit.MINUTES
-        ).build();
+                RemoveItemWorker.class, 1, TimeUnit.HOURS
+        )
+                .build();
         WorkManager.getInstance(this).enqueueUniquePeriodicWork("Send Data",  ExistingPeriodicWorkPolicy.KEEP,periodicWorkRequest);
     }
 
